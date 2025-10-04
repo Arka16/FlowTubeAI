@@ -126,62 +126,14 @@
         Hide Videos
     </button>
 
+    <button class="hide-button" id="toggleBtn" style="margin-top: 10px; background: #38a169;">
+        Toggle Filtering
+    </button>
+
     <div class="status" id="status">
         Videos hidden successfully!
     </div>
 
-    <script>
-        const keywordInput = document.getElementById('keywordInput');
-        const hideBtn = document.getElementById('hideBtn');
-        const status = document.getElementById('status');
-
-        function hideVideos() {
-            const keywords = keywordInput.value.trim();
-            
-            if (keywords) {
-                // Show success status
-                status.textContent = `Hiding videos with keywords: "${keywords}"`;
-                status.className = 'status success';
-                status.style.display = 'block';
-                
-                // Here you would implement the actual video hiding logic
-                // For extension, you'd typically send a message to content script
-                console.log('Hiding videos with keywords:', keywords);
-                
-                // Example of sending message to content script:
-                /*
-                chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                    chrome.tabs.sendMessage(tabs[0].id, {
-                        action: "hideVideos",
-                        keywords: keywords
-                    });
-                });
-                */
-                
-            } else {
-                // Show error status
-                status.textContent = 'Please enter keywords to hide videos';
-                status.className = 'status error';
-                status.style.display = 'block';
-            }
-
-            // Hide status after 3 seconds
-            setTimeout(() => {
-                status.style.display = 'none';
-            }, 3000);
-        }
-
-        // Event listeners
-        hideBtn.addEventListener('click', hideVideos);
-
-        keywordInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                hideVideos();
-            }
-        });
-
-        // Auto-focus on input
-        keywordInput.focus();
-    </script>
+    <script src="popup.js"></script>
 </body>
 </html>
