@@ -12,6 +12,9 @@ class VideoFilter {
   async init() {
     console.log('🎯 FlowTube AI Content Script loaded');
     
+    // Disable any existing styling when extension is first applied
+    this.disableStyling();
+    
     // Listen for messages from popup
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       this.handleMessage(request, sender, sendResponse);
@@ -50,6 +53,13 @@ class VideoFilter {
           this.showAllVideos();
         }
         sendResponse({ isFiltering: this.isFiltering });
+        break;
+        
+      case 'disableStyling':
+        this.disableStyling();
+        this.isFiltering = false;
+        await this.saveSettings();
+        sendResponse({ success: true });
         break;
     }
   }
@@ -161,6 +171,31 @@ class VideoFilter {
   showAllVideos() {
     const hiddenVideos = document.querySelectorAll('[data-flowtube-hidden="true"]');
     hiddenVideos.forEach(video => this.showVideo(video));
+  }
+
+  disableStyling() {
+    // Remove any existing FlowTube styling
+    const existingBanner = document.querySelector('[data-flowtube-banner]');
+    if (existingBanner) {
+      existingBanner.remove();
+    }
+
+    // Reset any modified body styles
+    if (document.body.style.backgroundColor === 'pink') {
+      document.body.style.backgroundColor = '';
+    }
+
+    // Show all previously hidden videos
+    this.showAllVideos();
+
+    // Remove any FlowTube CSS classes or attributes
+    const elementsWithFlowTube = document.querySelectorAll('[data-flowtube-hidden]');
+    elementsWithFlowTube.forEach(element => {
+      element.removeAttribute('data-flowtube-hidden');
+      element.style.display = '';
+    });
+
+    console.log('🚫 FlowTube styling disabled');
   }
 }
 

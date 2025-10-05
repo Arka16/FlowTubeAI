@@ -7,6 +7,7 @@ class PopupController {
     this.hideBtn = document.getElementById('hideBtn');
     this.status = document.getElementById('status');
     this.toggleBtn = document.getElementById('toggleBtn');
+    this.disableBtn = document.getElementById('disableBtn');
     
     this.init();
   }
@@ -32,6 +33,11 @@ class PopupController {
     // Add toggle button if it exists
     if (this.toggleBtn) {
       this.toggleBtn.addEventListener('click', () => this.toggleFiltering());
+    }
+
+    // Add disable button if it exists
+    if (this.disableBtn) {
+      this.disableBtn.addEventListener('click', () => this.disableStyling());
     }
   }
 
@@ -115,6 +121,30 @@ class PopupController {
     } catch (error) {
       console.error('Error toggling filtering:', error);
       this.showStatus('Failed to toggle filtering', 'error');
+    }
+  }
+
+  async disableStyling() {
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      
+      if (tab.url.includes('youtube.com')) {
+        await chrome.tabs.sendMessage(tab.id, {
+          action: 'disableStyling'
+        });
+        
+        this.showStatus('All styling disabled successfully!', 'success');
+        
+        // Reset UI
+        this.keywordInput.value = '';
+        this.hideBtn.textContent = 'Hide Videos';
+        this.hideBtn.style.background = '#667eea';
+      } else {
+        this.showStatus('Please navigate to YouTube to use this extension', 'error');
+      }
+    } catch (error) {
+      console.error('Error disabling styling:', error);
+      this.showStatus('Failed to disable styling', 'error');
     }
   }
 
